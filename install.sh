@@ -9,8 +9,11 @@ if [[ "$EUID" -ne 0 ]]; then
     exit 1
 fi
 
-# add execution permissions to start-hotspot.sh and healthcheck-hotspot.sh
-chmod +x "$SCRIPT_DIR/start-hotspot.sh" "$SCRIPT_DIR/healthcheck-hotspot.sh"
+# configure permissions for start-hotspot.sh and healthcheck-hotspot.sh
+chmod 500 "$SCRIPT_DIR/start-hotspot.sh" "$SCRIPT_DIR/healthcheck-hotspot.sh"
+
+# configure permissions for hotspot.conf
+chmod 400 "$SCRIPT_DIR/hotspot.conf"
 
 # check if nmcli is installed
 if ! command -v nmcli &> /dev/null; then
