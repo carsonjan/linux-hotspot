@@ -9,6 +9,11 @@ if [[ "$EUID" -ne 0 ]]; then
     exit 1
 fi
 
+source "$SCRIPT_DIR/utils.sh" || {
+    echo "Error: Failed to source utils.sh." >&2
+    exit 1
+}
+
 # configure permissions for start-hotspot.sh and healthcheck-hotspot.sh
 chmod 500 "$SCRIPT_DIR/start-hotspot.sh" "$SCRIPT_DIR/healthcheck-hotspot.sh"
 
@@ -20,6 +25,15 @@ if ! command -v nmcli &> /dev/null; then
     echo "Error: nmcli is not installed. Please install NetworkManager." >&2
     exit 1
 fi
+
+# ping healthcheck target to make sure upstream network is available
+healthcheck_target=$(get_config_val "HOTSPOT_HEALTHCHECK_TARGET")
+echo "Pinging healthcheck target ($healthcheck_target) to make sure upstream network is available..."
+ping -c 3 -W 5 "$healthcheck_target" &>/dev/null || {
+    echo "Error: Upstream network is not available. Please enable your upstream network connection." >&2
+    exit 1
+}
+echo "Upstream network is available."
 
 # run start-hotspot.sh to create hotspot
 "$SCRIPT_DIR/start-hotspot.sh" || {

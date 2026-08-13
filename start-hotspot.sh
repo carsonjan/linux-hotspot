@@ -2,36 +2,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+source "$SCRIPT_DIR/utils.sh" || {
+    echo "Error: Failed to source utils.sh." >&2
+    exit 1
+}
 
 # check if config file exists
 if [[ ! -f "$SCRIPT_DIR/hotspot.conf" ]]; then
     echo "Error: hotspot.conf file not found in script directory." >&2
     exit 1
 fi
-
-# Helper function to get config values safely (trims whitespace and quotes)
-get_config_val() {
-    local key="$1"
-    local raw_val
-    raw_val=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$SCRIPT_DIR/hotspot.conf" | cut -d'=' -f2- || true)
-    
-    # Trim leading whitespace
-    while [[ "$raw_val" =~ ^[[:space:]] ]]; do
-        raw_val="${raw_val#?}"
-    done
-    # Trim trailing whitespace
-    while [[ "$raw_val" =~ [[:space:]]$ ]]; do
-        raw_val="${raw_val%?}"
-    done
-    
-    # Strip leading/trailing quotes
-    raw_val="${raw_val#\"}"
-    raw_val="${raw_val#\'}"
-    raw_val="${raw_val%\"}"
-    raw_val="${raw_val%\'}"
-    
-    echo "$raw_val"
-}
 
 # read variables from config file
 raw_ssid=$(get_config_val "HOTSPOT_SSID")
@@ -44,6 +24,7 @@ password=$(get_config_val "HOTSPOT_PASSWORD")
 network_band=$(get_config_val "HOTSPOT_NETWORK_BAND")
 network_interface_0=$(get_config_val "HOTSPOT_NETWORK_INTERFACE")
 network_interface_1=$(get_config_val "HOTSPOT_NETWORK_INTERFACE_FALLBACK_1")
+healthcheck_target=$(get_config_val "HOTSPOT_HEALTHCHECK_TARGET")
 system_enable_performance_mode=$(get_config_val "SYSTEM_ENABLE_PERFORMANCE_MODE")
 system_disable_sleep_like=$(get_config_val "SYSTEM_DISABLE_SLEEP_LIKE")
 
@@ -53,11 +34,12 @@ if [[ -z "$ssid" ||
 -z "$network_band" || 
 -z "$network_interface_0" || 
 -z "$network_interface_1" || 
+-z "$healthcheck_target" || 
 -z "$system_enable_performance_mode" || 
 -z "$system_disable_sleep_like"
 ]]; then
     echo "Error: One or more configuration variables are empty in hotspot.conf." >&2
-    echo "Please check: HOTSPOT_SSID, HOTSPOT_PASSWORD, HOTSPOT_NETWORK_BAND, HOTSPOT_NETWORK_INTERFACE, HOTSPOT_NETWORK_INTERFACE_FALLBACK_1, SYSTEM_ENABLE_PERFORMANCE_MODE, SYSTEM_DISABLE_SLEEP_LIKE" >&2
+    echo "Please check: HOTSPOT_SSID, HOTSPOT_PASSWORD, HOTSPOT_NETWORK_BAND, HOTSPOT_NETWORK_INTERFACE, HOTSPOT_NETWORK_INTERFACE_FALLBACK_1, HOTSPOT_HEALTHCHECK_TARGET, SYSTEM_ENABLE_PERFORMANCE_MODE, SYSTEM_DISABLE_SLEEP_LIKE" >&2
     exit 1
 fi 
 
