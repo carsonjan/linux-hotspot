@@ -62,15 +62,15 @@ if [[ -z "$ssid" ||
 fi 
 
 # create hotspot with nmcli (ADD MORE FALLBACK INTERFACES HERE IF NEEDED)
-nmcli dev wifi hotspot ifname "$network_interface_0" ssid "$ssid" band "$network_band" con-name Hotspot password "$password" >/dev/null ||
-nmcli dev wifi hotspot ifname "$network_interface_1" ssid "$ssid" band "$network_band" con-name Hotspot password "$password" >/dev/null || {
+nmcli dev wifi hotspot ifname "$network_interface_0" ssid "$ssid" band "$network_band" con-name Hotspot password "$password" &>/dev/null ||
+nmcli dev wifi hotspot ifname "$network_interface_1" ssid "$ssid" band "$network_band" con-name Hotspot password "$password" &>/dev/null || {
     echo "Error: Failed to create hotspot on any of the configured interfaces." >&2
     exit 1
 }
 
 # set optional config for the hotspot to increase stability
-nmcli connection modify Hotspot 802-11-wireless.powersave 2 >/dev/null 2>&1 || true
-nmcli connection modify Hotspot connection.autoconnect no >/dev/null 2>&1 || true
+nmcli connection modify Hotspot 802-11-wireless.powersave 2 >/dev/null >&1 || true
+nmcli connection modify Hotspot connection.autoconnect no >/dev/null >&1 || true
 
 # set optional config in system to prevent sleeping and disconnecting the hotspot
 #    enable performance mode for the machine
@@ -84,3 +84,5 @@ if [[ "$system_disable_sleep_like" == "true" ]]; then
     systemctl mask hibernate.target >/dev/null 2>&1 || echo "Warning: Failed to disable hibernate.target." >&2
     systemctl mask hybrid-sleep.target >/dev/null 2>&1 || echo "Warning: Failed to disable hybrid-sleep.target." >&2
 fi
+
+echo "Hotspot created successfully."

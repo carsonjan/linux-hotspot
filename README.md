@@ -22,8 +22,8 @@ sudo -i
 #### Option A: From the Source Archive
 
 ```bash
-wget -O linux-hotspot.tar.gz https://github.com/carsonjan/linux-hotspot/archive/main.tar.gz
-tar -xzf linux-hotspot.tar.gz
+wget https://github.com/carsonjan/linux-hotspot/archive/main.tar.gz
+tar -xzf linux-hotspot-main.tar.gz
 cd linux-hotspot-main
 chmod +x install.sh
 ./install.sh
