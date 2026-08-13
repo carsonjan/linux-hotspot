@@ -2,7 +2,7 @@
 
 A Bash utility to create and maintain a persistent, keep-alive Wi-Fi hotspot on Linux.
 
-This project is designed for headless servers, IoT gateways, or development machines that need to broadcast a highly reliable Wi-Fi network. Although tested on Debian 13, it should work on any Linux distribution that uses NetworkManager and systemd, with nmcli and cron available.
+This project is designed for headless servers, IoT gateways, or development machines that need to broadcast a highly reliable Wi-Fi network. Although tested on Debian 13 minimal, it should work on any Linux distribution that uses NetworkManager and systemd, with nmcli and cron available.
 
 ---
 
