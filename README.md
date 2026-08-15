@@ -23,7 +23,7 @@ sudo -i
 
 ```bash
 wget https://github.com/carsonjan/linux-hotspot/archive/main.tar.gz
-tar -xzf linux-hotspot-main.tar.gz
+tar -xzf main.tar.gz
 cd linux-hotspot-main
 chmod +x install.sh
 ./install.sh
